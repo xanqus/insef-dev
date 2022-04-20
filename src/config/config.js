@@ -76,6 +76,7 @@ module.exports = {
     s3AccessKey: envVars.AWS_S3_ACCESS_KEY,
     s3SecretKey: envVars.AWS_S3_SECRET_KEY,
     s3Bucket: envVars.AWS_S3_BUCKET,
+    s3ResizedBucket: envVars.AWS_S3_RESIZED_BUCKET,
   },
   email: {
     smtp: {

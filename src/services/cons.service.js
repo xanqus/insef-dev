@@ -8,7 +8,8 @@ const userService = require("./user.service");
 const supportService = require("./support.service");
 const {CONS_STATUS} = require("../enums/cons.enum");
 const { pagination } = require('../utils/pagination');
-const { User, Cons, ConsCompany, ConsProcessInfo, Support } = require('../models');
+const s3 = require("../config/s3");
+const { User, Cons, ConsCompany, ConsProcessInfo, Support, testTable } = require('../models');
 
 
 const checkConsParams = async (reqBody) => {
@@ -120,7 +121,22 @@ const deleteConsById = async (consId) => {
     if (!result){
         throw new ApiError(httpStatus.NOT_FOUND, 'construction not found');
     }
-    await result.destroy();
+    	
+    const destroyData = await result.destroy();
+    
+    const query = "SELECT `cm_key` FROM `testTable` AS `testTable`";
+    const urls = await db.sequelize.query(query, { type: QueryTypes.SELECT });
+    let key_list = [];
+    let resized_key_list = [];
+    for (let i = 0; i < urls.length; i++) {
+      const tmp = urls[i].cm_key.split("/");
+      key_list.push({ Key: `cons/${tmp[1]}` });
+      resized_key_list.push({ Key: `cons-w_200/${tmp[1]}` });
+      resized_key_list.push({ Key: `cons-w_400/${tmp[1]}` });
+  }
+    const deleted = await s3.deleteObjs(key_list);
+    const deleted_resized = await s3.deleteResizedObjs(resized_key_list);
+    testTable.destroy({ truncate: true });
 };
 
 const closeConsById = async(consId, reqBody) => {

@@ -41,9 +41,22 @@ const deleteObjs = async (objects) => (
         },
     }).promise());
 
+
+const deleteResizedObjs = async (objects) =>
+  s3
+    .deleteObjects({
+      Bucket: config.aws.s3ResizedBucket, // 사용자 버켓 이름
+      Delete: {
+        Objects: objects,
+        Quiet: false,
+      },
+    })
+    .promise();
+
 module.exports = {
     upload,
     deleteObj,
     deleteObjs,
+    deleteResizedObjs
 };
 
