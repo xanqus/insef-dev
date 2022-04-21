@@ -134,6 +134,7 @@ const deleteConsById = async (consId) => {
       resized_key_list.push({ Key: `cons-w_200/${tmp[1]}` });
       resized_key_list.push({ Key: `cons-w_400/${tmp[1]}` });
   }
+    /*aws 삭제 연동*/
     const deleted = await s3.deleteObjs(key_list);
     const deleted_resized = await s3.deleteResizedObjs(resized_key_list);
     testTable.destroy({ truncate: true });
